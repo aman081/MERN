@@ -29,8 +29,12 @@ const PORT = process.env.PORT || 5001;
 const isProduction = process.env.NODE_ENV === "production";
 
 const allowedOrigins = isProduction
-  ? ["https://urjaa-frontend.vercel.app"]
+  ? [
+      "https://urjaa-frontend.vercel.app",
+      "https://urjaasportsmanagement.vercel.app"
+    ]
   : ["http://localhost:5173"];
+
 
 const corsOptions = {
   origin: function (origin, callback) {

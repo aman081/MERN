@@ -26,16 +26,18 @@ const PORT = process.env.PORT || 5001;
 // Middleware
 
 
-const allowedOrigins = [
-  "https://urjaa-frontend.vercel.app",
-  "http://localhost:5173"
-];
+const isProduction = process.env.NODE_ENV === "production";
+
+const allowedOrigins = isProduction
+  ? ["https://urjaa-frontend.vercel.app"]
+  : ["http://localhost:5173"];
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("Blocked origin:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -43,7 +45,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

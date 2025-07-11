@@ -18,7 +18,7 @@ function App() {
         </div>
         
         <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">
-          Vite + React + Tailwind CSS
+          AMAN KUMAR
         </h1>
         
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto">

@@ -1,1 +1,1 @@
-This is a MERN STACK project for sports events management of URJAA fest at NIT Jamshedpur.
+This is a MERN STACK project for sports events management for URJAA(annual sports fest)  at NIT Jamshedpur .

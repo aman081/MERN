@@ -27,14 +27,23 @@ const PORT = process.env.PORT || 5001;
 
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://urjaa-frontend.vercel.app"
+  "https://urjaa-frontend.vercel.app",
+  "http://localhost:5173"
 ];
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true // if you're using cookies or authentication
-}));
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

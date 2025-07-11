@@ -1,21 +1,9 @@
 const express = require('express');
 const { body } = require('express-validator');
 const { authenticateToken, requireAdmin } = require('../middleware/auth');
+const announcementController = require('../controllers/announcementController');
 
 const router = express.Router();
-
-// Placeholder for announcement controller
-const announcementController = {
-  createAnnouncement: async (req, res) => {
-    res.json({ success: true, message: 'Create announcement endpoint' });
-  },
-  getAnnouncements: async (req, res) => {
-    res.json({ success: true, message: 'Get announcements endpoint' });
-  },
-  getAnnouncement: async (req, res) => {
-    res.json({ success: true, message: 'Get single announcement endpoint' });
-  }
-};
 
 // Public routes
 router.get('/', announcementController.getAnnouncements);
@@ -28,5 +16,17 @@ router.post('/', [
   body('title').notEmpty().withMessage('Announcement title is required'),
   body('body').notEmpty().withMessage('Announcement body is required')
 ], announcementController.createAnnouncement);
+
+router.put('/:id', [
+  authenticateToken,
+  requireAdmin,
+  body('title').notEmpty().withMessage('Announcement title is required'),
+  body('body').notEmpty().withMessage('Announcement body is required')
+], announcementController.updateAnnouncement);
+
+router.delete('/:id', [
+  authenticateToken,
+  requireAdmin
+], announcementController.deleteAnnouncement);
 
 module.exports = router; 

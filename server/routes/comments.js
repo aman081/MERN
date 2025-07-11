@@ -1,21 +1,9 @@
 const express = require('express');
 const { body } = require('express-validator');
 const { authenticateToken, requireAdmin, requirePublicUser } = require('../middleware/auth');
+const commentController = require('../controllers/commentController');
 
 const router = express.Router();
-
-// Placeholder for comment controller
-const commentController = {
-  createComment: async (req, res) => {
-    res.json({ success: true, message: 'Create comment endpoint' });
-  },
-  getComments: async (req, res) => {
-    res.json({ success: true, message: 'Get comments endpoint' });
-  },
-  deleteComment: async (req, res) => {
-    res.json({ success: true, message: 'Delete comment endpoint' });
-  }
-};
 
 // Public routes
 router.get('/', commentController.getComments);

@@ -9,11 +9,11 @@ const generateToken = (userId) => {
 // Admin login
 const adminLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    // Find admin user (assuming admin uses username instead of email)
+    // Find admin user (using email, case-insensitive)
     const admin = await User.findOne({ 
-      $or: [{ email: username }, { email: username.toLowerCase() }],
+      $or: [{ email }, { email: email?.toLowerCase() }],
       role: 'admin' 
     });
 
@@ -57,31 +57,40 @@ const adminLogin = async (req, res) => {
   }
 };
 
-// Public user login
+// Public user login (with auto-registration)
 const publicLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    // Find public user
-    const user = await User.findOne({ 
+    const { email, password, name } = req.body;
+    // Try to find public user
+    let user = await User.findOne({ 
       email: email.toLowerCase(),
       role: 'public'
     });
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
+      // Auto-register new public user
+      if (!name) {
+        return res.status(400).json({
+          success: false,
+          message: 'Name is required for new users'
+        });
+      }
+      user = new User({
+        email: email.toLowerCase(),
+        password,
+        name,
+        role: 'public'
       });
-    }
-
-    // Check password
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
+      await user.save();
+    } else {
+      // Check password for existing user
+      const isPasswordValid = await user.comparePassword(password);
+      if (!isPasswordValid) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
     }
 
     // Generate token
@@ -98,7 +107,7 @@ const publicLogin = async (req, res) => {
           role: user.role
         }
       },
-      message: 'Login successful'
+      message: user.createdAt.getTime() === user.updatedAt.getTime() ? 'Account created and logged in!' : 'Login successful'
     });
   } catch (error) {
     res.status(500).json({

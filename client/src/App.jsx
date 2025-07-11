@@ -1,45 +1,81 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './contexts/AuthContext';
+import { EventProvider } from './contexts/EventContext';
+import Layout from './components/Layout/Layout';
+import Home from './pages/Home';
+import Events from './pages/Events';
+import EventDetail from './pages/EventDetail';
+import Leaderboard from './pages/Leaderboard';
+import PointsSystem from './pages/PointsSystem';
+import Gallery from './pages/Gallery';
+import Announcements from './pages/Announcements';
+import AdminDashboard from './pages/AdminDashboard';
+import Login from './pages/Login';
+import Test from './pages/Test';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
-      <div className="text-center">
-        <div className="flex justify-center space-x-8 mb-8">
-          <a href="https://vite.dev" target="_blank" className="hover:scale-110 transition-transform">
-            <img src={viteLogo} className="h-24 w-24" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank" className="hover:scale-110 transition-transform">
-            <img src={reactLogo} className="h-24 w-24 animate-spin-slow" alt="React logo" />
-          </a>
-        </div>
-        
-        <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-8">
-          AMAN KUMAR
-        </h1>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-md mx-auto">
-          <button 
-            onClick={() => setCount((count) => count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors mb-4"
-          >
-            Count is {count}
-          </button>
-          
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Edit <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded text-sm">src/App.jsx</code> and save to test HMR
-          </p>
-          
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Click on the Vite and React logos to learn more
-          </p>
-        </div>
-      </div>
-    </div>
-  )
+    <Router>
+      <AuthProvider>
+        <EventProvider>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Layout>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Home />} />
+                <Route path="/test" element={<Test />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/events/:id" element={<EventDetail />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/points-system" element={<PointsSystem />} />
+                <Route path="/gallery" element={<Gallery />} />
+                <Route path="/announcements" element={<Announcements />} />
+                <Route path="/login" element={<Login />} />
+                
+                {/* Protected Admin Routes */}
+                <Route 
+                  path="/admin/*" 
+                  element={
+                    <ProtectedRoute role="admin">
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+              </Routes>
+            </Layout>
+            
+            {/* Toast Notifications */}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+                success: {
+                  duration: 3000,
+                  iconTheme: {
+                    primary: '#22c55e',
+                    secondary: '#fff',
+                  },
+                },
+                error: {
+                  duration: 5000,
+                  iconTheme: {
+                    primary: '#ef4444',
+                    secondary: '#fff',
+                  },
+                },
+              }}
+            />
+          </div>
+        </EventProvider>
+      </AuthProvider>
+    </Router>
+  );
 }
 
-export default App
+export default App;

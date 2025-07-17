@@ -19,8 +19,11 @@ const statusColors = {
   Concluded: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
 };
 
+const ALL_BRANCHES = ['CSE', 'ECE', 'CE', 'ME', 'EE', 'MME', 'PIE+ECM'];
+
 const AdminDashboard = () => {
   const [tab, setTab] = useState('events');
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -43,8 +46,13 @@ const AdminDashboard = () => {
               {t.label}
             </Button>
           ))}
+          <Button variant="danger" onClick={() => navigate('/admin/leaderboard')}>
+            Edit Leaderboard
+          </Button>
         </div>
       </motion.div>
+      {/* Leaderboard Modal */}
+      {/* Remove all leaderboardModalOpen, leaderboardLoading, leaderboardError, leaderboardSuccess, manualPoints, manualLoading, manualError, manualSuccess, handleClearLeaderboard, handleManualPointsChange, handleManualPointsSubmit, and the Dialog/modal rendering. */}
       <div>
         {tab === 'events' && <EventsAdmin />}
         {tab === 'announcements' && <AnnouncementsAdmin />}
@@ -63,9 +71,7 @@ const EventsAdmin = () => {
   });
   const [editId, setEditId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-  const [winnerModal, setWinnerModal] = useState({ open: false, event: null });
-  const [winners, setWinners] = useState([]);
-  const [winnerLoading, setWinnerLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleEdit = (event) => {
     setForm({ ...event, day: event.day?.slice(0, 10) });
@@ -97,28 +103,7 @@ const EventsAdmin = () => {
     await updateEventStatus(event._id, 'Active');
   };
   const handleConclude = (event) => {
-    setWinnerModal({ open: true, event });
-    if (event.eventType === 'Individual') {
-      setWinners([
-        { position: 'First', branch: '', points: event.points.first },
-        { position: 'Second', branch: '', points: event.points.second },
-        { position: 'Third', branch: '', points: event.points.third }
-      ]);
-    } else {
-      setWinners([
-        { position: 'Team', branch: '', points: event.points.first, playerOfTheMatch: '' }
-      ]);
-    }
-  };
-  const handleWinnerChange = (idx, field, value) => {
-    setWinners(ws => ws.map((w, i) => i === idx ? { ...w, [field]: value } : w));
-  };
-  const handleSaveWinners = async () => {
-    setWinnerLoading(true);
-    await addWinners(winnerModal.event._id, winners);
-    setWinnerModal({ open: false, event: null });
-    setWinnerLoading(false);
-    fetchEvents();
+    navigate(`/admin/events/${event._id}/conclude`);
   };
 
   // Sort events: Active, Upcoming, Concluded
@@ -269,62 +254,6 @@ const EventsAdmin = () => {
           ))}
         </div>
       </div>
-      {/* Winner Assignment Modal */}
-      {winnerModal.open && (
-        <Dialog open={winnerModal.open} onClose={() => setWinnerModal({ open: false, event: null })} className="fixed z-50 inset-0 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4">
-            <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-            <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 max-w-lg w-full z-10">
-              <Dialog.Title className="text-xl font-bold mb-4">Assign Winners ({winnerModal.event.eventType})</Dialog.Title>
-              <form onSubmit={e => { e.preventDefault(); handleSaveWinners(); }} className="space-y-4">
-                {winnerModal.event.eventType === 'Individual' ? (
-                  winners.map((winner, idx) => (
-                    <div key={idx} className="space-y-2">
-                      <label className="block text-sm font-medium mb-1">{winner.position} Branch</label>
-                      <select
-                        className="input"
-                        value={winner.branch}
-                        onChange={e => handleWinnerChange(idx, 'branch', e.target.value)}
-                        required
-                      >
-                        <option value="">Select branch</option>
-                        {winnerModal.event.branchTags.filter(branch => !winners.some((w, i) => i !== idx && w.branch === branch)).map(branch => (
-                          <option key={branch} value={branch}>{branch}</option>
-                        ))}
-                      </select>
-                      <label className="block text-xs font-medium mb-1">Points</label>
-                      <input className="input" type="number" value={winner.points} readOnly />
-                    </div>
-                  ))
-                ) : (
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium mb-1">Winning Branch</label>
-                    <select
-                      className="input"
-                      value={winners[0].branch}
-                      onChange={e => handleWinnerChange(0, 'branch', e.target.value)}
-                      required
-                    >
-                      <option value="">Select branch</option>
-                      {winnerModal.event.branchTags.map(branch => (
-                        <option key={branch} value={branch}>{branch}</option>
-                      ))}
-                    </select>
-                    <label className="block text-xs font-medium mb-1">Points</label>
-                    <input className="input" type="number" value={winners[0].points} readOnly />
-                    <label className="block text-xs font-medium mb-1">Player of the Match (optional)</label>
-                    <input className="input" placeholder="Player of the Match" value={winners[0].playerOfTheMatch || ''} onChange={e => handleWinnerChange(0, 'playerOfTheMatch', e.target.value)} />
-                  </div>
-                )}
-                <div className="flex gap-2 justify-end mt-4">
-                  <Button type="button" variant="secondary" onClick={() => setWinnerModal({ open: false, event: null })}>Cancel</Button>
-                  <Button type="submit" variant="primary" loading={winnerLoading}>Save Winners</Button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </Dialog>
-      )}
     </div>
   );
 };

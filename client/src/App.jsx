@@ -16,6 +16,8 @@ import Test from './pages/Test';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdminAnnouncementDetail from './pages/AdminAnnouncementDetail';
 import AdminAnnouncementComments from './pages/AdminAnnouncementComments';
+import AdminEventConclude from './pages/AdminEventConclude';
+import AdminLeaderboardEdit from './pages/AdminLeaderboardEdit';
 
 function App() {
   return (
@@ -58,6 +60,22 @@ function App() {
                   element={
                     <ProtectedRoute role="admin">
                       <AdminAnnouncementComments />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/events/:id/conclude" 
+                  element={
+                    <ProtectedRoute role="admin">
+                      <AdminEventConclude />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/leaderboard" 
+                  element={
+                    <ProtectedRoute role="admin">
+                      <AdminLeaderboardEdit />
                     </ProtectedRoute>
                   } 
                 />

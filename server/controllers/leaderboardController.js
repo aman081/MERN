@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const LeaderboardOverride = require('../models/LeaderboardOverride');
 
 // Calculate leaderboard from concluded events
 const getLeaderboard = async (req, res) => {
@@ -50,6 +51,17 @@ const getLeaderboard = async (req, res) => {
       }
     });
 
+    // Merge manual overrides
+    const overrides = await LeaderboardOverride.find({});
+    overrides.forEach(override => {
+      if (branchPoints[override.branch]) {
+        branchPoints[override.branch].points = override.points;
+        branchPoints[override.branch].firstCount = override.firstCount;
+        branchPoints[override.branch].secondCount = override.secondCount;
+        branchPoints[override.branch].thirdCount = override.thirdCount;
+      }
+    });
+
     // Convert to array and sort
     const leaderboard = Object.values(branchPoints).sort((a, b) => {
       // First sort by total points
@@ -98,7 +110,8 @@ const getPointsSystem = async (req, res) => {
         Chess: { first: 5, second: 3, third: 1 },
         LawnTennis: { first: 5, second: 3, third: 1 },
         Marathon: { first: 5, second: 3, third: 1 },
-        Yoga: { first: 5, second: 3, third: 1 }
+        Yoga: { first: 5, second: 3, third: 1 },
+        Parade: { first: 10, second: 5, third: 2.5 }
       },
       Girls: {
         Cricket: { first: 5, second: 3, third: 1 },
@@ -112,7 +125,8 @@ const getPointsSystem = async (req, res) => {
         Chess: { first: 5, second: 3, third: 1 },
         LawnTennis: { first: 5, second: 3, third: 1 },
         Marathon: { first: 5, second: 3, third: 1 },
-        Yoga: { first: 5, second: 3, third: 1 }
+        Yoga: { first: 5, second: 3, third: 1 },
+        Parade: { first: 10, second: 5, third: 2.5 }
       }
     };
 
@@ -129,7 +143,40 @@ const getPointsSystem = async (req, res) => {
   }
 };
 
+// PATCH /api/leaderboard/manual - set manual points and medals for a branch
+const setManualLeaderboard = async (req, res) => {
+  try {
+    const { branch, points, firstCount, secondCount, thirdCount } = req.body;
+    if (!branch || typeof points !== 'number' || points < 0 ||
+        typeof firstCount !== 'number' || firstCount < 0 ||
+        typeof secondCount !== 'number' || secondCount < 0 ||
+        typeof thirdCount !== 'number' || thirdCount < 0) {
+      return res.status(400).json({ success: false, message: 'Invalid branch, points, or medal counts' });
+    }
+    await LeaderboardOverride.findOneAndUpdate(
+      { branch },
+      { branch, points, firstCount, secondCount, thirdCount },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, message: 'Leaderboard points and medals updated.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to update leaderboard points and medals.' });
+  }
+};
+
+// Utility: Clear leaderboard by removing winners from all events
+const clearLeaderboard = async (req, res) => {
+  try {
+    await Event.updateMany({}, { $set: { winners: [] } });
+    res.json({ success: true, message: 'Leaderboard cleared. All branch points set to 0.' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error clearing leaderboard', error: error.message });
+  }
+};
+
 module.exports = {
   getLeaderboard,
-  getPointsSystem
+  getPointsSystem,
+  clearLeaderboard,
+  setManualLeaderboard
 }; 

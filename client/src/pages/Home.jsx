@@ -15,28 +15,43 @@ import {
 import { useEvents } from '../contexts/EventContext';
 import { api } from '../services/api';
 
+const ALL_BRANCHES = ['CSE', 'ECE', 'CE', 'ME', 'EE', 'MME', 'PIE+ECM'];
+
 const Home = () => {
-  const { getUpcomingEvents, getActiveEvents, getConcludedEvents } = useEvents();
+  const { getUpcomingEvents, getActiveEvents } = useEvents();
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sportsCount, setSportsCount] = useState(13); // fallback
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         const response = await api.get('/leaderboard');
-        setLeaderboard(response.data.data.slice(0, 5)); // Top 5
+        setLeaderboard(response.data.data); // all branches
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchLeaderboard();
+    // Fetch sports count from points system
+    const fetchSports = async () => {
+      try {
+        const res = await api.get('/leaderboard/points-system');
+        // Count unique games across both Boys and Girls
+        const games = new Set();
+        Object.values(res.data.data).forEach(category => {
+          Object.keys(category).forEach(game => games.add(game));
+        });
+        setSportsCount(games.size);
+      } catch {}
+    };
+    fetchSports();
   }, []);
 
-  const upcomingEvents = getUpcomingEvents().slice(0, 3);
-  const activeEvents = getActiveEvents().slice(0, 3);
+  const upcomingEvents = getUpcomingEvents();
+  const activeEvents = getActiveEvents();
 
   const features = [
     {
@@ -166,7 +181,7 @@ const Home = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Branches</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{leaderboard.length}</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{ALL_BRANCHES.length}</p>
             </div>
           </div>
         </div>
@@ -178,7 +193,7 @@ const Home = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Sports</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">8+</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{sportsCount}+</p>
             </div>
           </div>
         </div>

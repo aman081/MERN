@@ -10,9 +10,7 @@ const Announcements = () => {
   const [comments, setComments] = useState({}); // { announcementId: [comments] }
   const [commentInputs, setCommentInputs] = useState({}); // { announcementId: { name, content } }
   const [commentLoading, setCommentLoading] = useState({}); // { announcementId: bool }
-  const [annForm, setAnnForm] = useState({ title: '', body: '' });
-  const [annFormOpen, setAnnFormOpen] = useState(false);
-  const [annFormLoading, setAnnFormLoading] = useState(false);
+  // Removed annForm, annFormOpen, annFormLoading
   const { isAdmin, isPublicUser, user } = useAuth();
 
   // Fetch announcements
@@ -97,14 +95,16 @@ const Announcements = () => {
   // Add announcement (admin)
   const handleAddAnnouncement = async (e) => {
     e.preventDefault();
-    setAnnFormLoading(true);
+    // setAnnFormLoading(true); // Removed
     try {
       const res = await api.post('/announcements', annForm);
       setAnnouncements((prev) => [res.data.data, ...prev]);
       setAnnForm({ title: '', body: '' });
       setAnnFormOpen(false);
-    } catch (err) {}
-    setAnnFormLoading(false);
+    } catch (err) {
+      // setAnnFormLoading(false); // Removed
+    }
+    // setAnnFormLoading(false); // Removed
   };
 
   return (
@@ -118,44 +118,9 @@ const Announcements = () => {
         <p className="mt-2 text-gray-600 dark:text-gray-400">
           Stay updated with latest news and updates
         </p>
-        {isAdmin() && (
-          <Button variant="primary" className="mt-4" onClick={() => setAnnFormOpen((v) => !v)}>
-            {annFormOpen ? 'Cancel' : 'Add Announcement'}
-          </Button>
-        )}
+        {/* Removed add announcement button */}
       </motion.div>
-      {annFormOpen && isAdmin() && (
-        <motion.form
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          onSubmit={handleAddAnnouncement}
-          className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4 shadow space-y-4"
-        >
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Title</label>
-            <input
-              className="input"
-              name="title"
-              value={annForm.title}
-              onChange={e => setAnnForm(f => ({ ...f, title: e.target.value }))}
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Body</label>
-            <textarea
-              className="input"
-              name="body"
-              value={annForm.body}
-              onChange={e => setAnnForm(f => ({ ...f, body: e.target.value }))}
-              required
-              rows={3}
-            />
-          </div>
-          <Button type="submit" variant="primary" loading={annFormLoading}>Add Announcement</Button>
-        </motion.form>
-      )}
+      {/* Removed add announcement form and button */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -179,11 +144,6 @@ const Announcements = () => {
                   <span className="text-xs text-gray-400">{new Date(ann.createdAt).toLocaleDateString()}</span>
                 </div>
                 <div className="text-gray-700 dark:text-gray-200 text-sm mb-2">{ann.body || ann.message}</div>
-                {isAdmin() && (
-                  <Button variant="danger" size="sm" className="mb-2" onClick={() => handleDeleteAnnouncement(ann._id)}>
-                    Delete Announcement
-                  </Button>
-                )}
                 {/* Comments Section */}
                 <div className="mt-4">
                   <div className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Comments</div>
@@ -196,18 +156,13 @@ const Announcements = () => {
                             <div className="text-sm text-gray-700 dark:text-gray-200">{comment.content}</div>
                             <div className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleString()}</div>
                           </div>
-                          {isAdmin() && (
-                            <Button variant="danger" size="sm" onClick={() => handleDeleteComment(comment._id, ann._id)}>
-                              Delete
-                            </Button>
-                          )}
                         </div>
                       ))}
                     </div>
                   ) : (
                     <div className="text-xs text-gray-400">No comments yet.</div>
                   )}
-                  {/* Add Comment Form */}
+                  {/* Add Comment Form for public users only */}
                   {isPublicUser() && (
                     <form
                       className="mt-2 flex flex-col gap-2"

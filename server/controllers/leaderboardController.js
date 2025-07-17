@@ -36,6 +36,20 @@ const getLeaderboard = async (req, res) => {
       });
     });
 
+    // Ensure all branches are present
+    const ALL_BRANCHES = ['CSE', 'ECE', 'CE', 'ME', 'EE', 'MME', 'PIE+ECM'];
+    ALL_BRANCHES.forEach(branch => {
+      if (!branchPoints[branch]) {
+        branchPoints[branch] = {
+          branch,
+          points: 0,
+          firstCount: 0,
+          secondCount: 0,
+          thirdCount: 0
+        };
+      }
+    });
+
     // Convert to array and sort
     const leaderboard = Object.values(branchPoints).sort((a, b) => {
       // First sort by total points
@@ -79,7 +93,12 @@ const getPointsSystem = async (req, res) => {
         Volleyball: { first: 5, second: 3, third: 1 },
         Badminton: { first: 4, second: 2, third: 1 },
         TableTennis: { first: 3, second: 2, third: 1 },
-        Athletics: { first: 5, second: 3, third: 1 }
+        Athletics: { first: 5, second: 3, third: 1 },
+        Hockey: { first: 5, second: 3, third: 1 },
+        Chess: { first: 5, second: 3, third: 1 },
+        LawnTennis: { first: 5, second: 3, third: 1 },
+        Marathon: { first: 5, second: 3, third: 1 },
+        Yoga: { first: 5, second: 3, third: 1 }
       },
       Girls: {
         Cricket: { first: 5, second: 3, third: 1 },
@@ -88,7 +107,12 @@ const getPointsSystem = async (req, res) => {
         Volleyball: { first: 5, second: 3, third: 1 },
         Badminton: { first: 4, second: 2, third: 1 },
         TableTennis: { first: 3, second: 2, third: 1 },
-        Athletics: { first: 5, second: 3, third: 1 }
+        Athletics: { first: 5, second: 3, third: 1 },
+        Hockey: { first: 5, second: 3, third: 1 },
+        Chess: { first: 5, second: 3, third: 1 },
+        LawnTennis: { first: 5, second: 3, third: 1 },
+        Marathon: { first: 5, second: 3, third: 1 },
+        Yoga: { first: 5, second: 3, third: 1 }
       }
     };
 

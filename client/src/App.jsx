@@ -14,6 +14,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Test from './pages/Test';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
+import AdminAnnouncementDetail from './pages/AdminAnnouncementDetail';
+import AdminAnnouncementComments from './pages/AdminAnnouncementComments';
 
 function App() {
   return (
@@ -40,6 +42,22 @@ function App() {
                   element={
                     <ProtectedRoute role="admin">
                       <AdminDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/announcements/:id" 
+                  element={
+                    <ProtectedRoute role="admin">
+                      <AdminAnnouncementDetail />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/admin/announcements/:id/comments" 
+                  element={
+                    <ProtectedRoute role="admin">
+                      <AdminAnnouncementComments />
                     </ProtectedRoute>
                   } 
                 />

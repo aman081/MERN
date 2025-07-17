@@ -4,6 +4,7 @@ import { useEvents } from '../contexts/EventContext';
 import { api } from '../services/api';
 import Button from '../components/UI/Button';
 import { Dialog } from '@headlessui/react';
+import { useNavigate } from 'react-router-dom';
 
 
 const TABS = [
@@ -120,6 +121,12 @@ const EventsAdmin = () => {
     fetchEvents();
   };
 
+  // Sort events: Active, Upcoming, Concluded
+  const statusOrder = ['Active', 'Upcoming', 'Concluded'];
+  const sortedEvents = [...events].sort((a, b) => {
+    return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+  });
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -211,9 +218,9 @@ const EventsAdmin = () => {
             <tbody>
               {loading ? (
                 <tr><td colSpan={4} className="text-center py-4">Loading...</td></tr>
-              ) : events.length === 0 ? (
+              ) : sortedEvents.length === 0 ? (
                 <tr><td colSpan={4} className="text-center py-4">No events found.</td></tr>
-              ) : events.map(event => (
+              ) : sortedEvents.map(event => (
                 <tr key={event._id} className="border-b border-gray-100 dark:border-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition">
                   <td className="px-4 py-2 font-semibold text-gray-900 dark:text-white">{event.name}</td>
                   <td className="px-4 py-2">{new Date(event.day).toLocaleDateString()}</td>
@@ -239,9 +246,9 @@ const EventsAdmin = () => {
         <div className="md:hidden space-y-4">
           {loading ? (
             <div className="text-center py-4">Loading...</div>
-          ) : events.length === 0 ? (
+          ) : sortedEvents.length === 0 ? (
             <div className="text-center py-4">No events found.</div>
-          ) : events.map(event => (
+          ) : sortedEvents.map(event => (
             <div key={event._id} className="rounded-lg shadow border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold text-gray-900 dark:text-white">{event.name}</span>
@@ -328,9 +335,8 @@ const AnnouncementsAdmin = () => {
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({ title: '', body: '' });
-  const [editId, setEditId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-  const [comments, setComments] = useState({}); // { announcementId: [comments] }
+  const navigate = useNavigate();
 
   // Fetch announcements
   const fetchAnnouncements = async () => {
@@ -345,65 +351,27 @@ const AnnouncementsAdmin = () => {
     }
   };
 
-  // Fetch comments for an announcement
-  const fetchComments = async (announcementId) => {
-    try {
-      const res = await api.get(`/comments?announcementId=${announcementId}`);
-      setComments((prev) => ({ ...prev, [announcementId]: res.data.data || [] }));
-    } catch (err) {
-      setComments((prev) => ({ ...prev, [announcementId]: [] }));
-    }
-  };
-
   useEffect(() => {
     fetchAnnouncements();
   }, []);
 
-  useEffect(() => {
-    announcements.forEach((ann) => {
-      fetchComments(ann._id);
-    });
-    // eslint-disable-next-line
-  }, [announcements.length]);
-
-  const handleEdit = (ann) => {
-    setForm({ title: ann.title, body: ann.body });
-    setEditId(ann._id);
-    setFormOpen(true);
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this announcement?')) return;
-    await api.delete(`/announcements/${id}`);
-    fetchAnnouncements();
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
-    if (editId) {
-      await api.put(`/announcements/${editId}`, form);
-    } else {
+    try {
       await api.post('/announcements', form);
-    }
-    setForm({ title: '', body: '' });
-    setEditId(null);
-    setFormOpen(false);
+      setForm({ title: '', body: '' });
+      setFormOpen(false);
+      fetchAnnouncements();
+    } catch (err) {}
     setFormLoading(false);
-    fetchAnnouncements();
-  };
-
-  const handleDeleteComment = async (commentId, announcementId) => {
-    if (!window.confirm('Delete this comment?')) return;
-    await api.delete(`/comments/${commentId}`);
-    fetchComments(announcementId);
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Announcements</h2>
-        <Button variant="primary" onClick={() => { setFormOpen((v) => !v); setEditId(null); }}>
+        <Button variant="primary" onClick={() => setFormOpen(v => !v)}>
           {formOpen ? 'Cancel' : 'Add Announcement'}
         </Button>
       </div>
@@ -411,7 +379,7 @@ const AnnouncementsAdmin = () => {
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4 shadow space-y-4">
           <input className="input" placeholder="Title" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} required />
           <textarea className="input" placeholder="Body" value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} required rows={2} />
-          <Button type="submit" variant="primary" loading={formLoading}>{editId ? 'Update' : 'Add'} Announcement</Button>
+          <Button type="submit" variant="primary" loading={formLoading}>Add Announcement</Button>
         </form>
       )}
       <div className="space-y-6">
@@ -427,30 +395,8 @@ const AnnouncementsAdmin = () => {
             </div>
             <div className="text-gray-700 dark:text-gray-200 text-sm mb-2">{ann.body || ann.message}</div>
             <div className="flex gap-2 mb-2">
-              <Button size="sm" variant="secondary" onClick={() => handleEdit(ann)}>Edit</Button>
-              <Button size="sm" variant="danger" onClick={() => handleDelete(ann._id)}>Delete</Button>
-            </div>
-            {/* Comments Section */}
-            <div className="mt-4">
-              <div className="font-semibold text-gray-800 dark:text-gray-100 mb-2">Comments</div>
-              {comments[ann._id] && comments[ann._id].length > 0 ? (
-                <div className="space-y-2">
-                  {comments[ann._id].map(comment => (
-                    <div key={comment._id} className="flex items-start gap-2 bg-white dark:bg-gray-800 rounded p-2 border border-gray-100 dark:border-gray-700">
-                      <div className="flex-1">
-                        <div className="text-xs font-bold text-blue-700 dark:text-blue-300">{comment.name}</div>
-                        <div className="text-sm text-gray-700 dark:text-gray-200">{comment.content}</div>
-                        <div className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleString()}</div>
-                      </div>
-                      <Button variant="danger" size="sm" onClick={() => handleDeleteComment(comment._id, ann._id)}>
-                        Delete
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-xs text-gray-400">No comments yet.</div>
-              )}
+              <Button size="sm" variant="secondary" onClick={() => navigate(`/admin/announcements/${ann._id}`)}>Edit</Button>
+              <Button size="sm" variant="danger" onClick={() => navigate(`/admin/announcements/${ann._id}`)}>Delete</Button>
             </div>
           </div>
         ))}

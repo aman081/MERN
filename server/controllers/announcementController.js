@@ -1,4 +1,5 @@
 const Announcement = require('../models/Announcement');
+const Comment = require('../models/Comment');
 
 // Create announcement
 const createAnnouncement = async (req, res) => {
@@ -60,7 +61,9 @@ const deleteAnnouncement = async (req, res) => {
     if (!announcement) {
       return res.status(404).json({ success: false, message: 'Announcement not found' });
     }
-    res.json({ success: true, message: 'Announcement deleted' });
+    // Delete all comments related to this announcement
+    await Comment.deleteMany({ announcementId: req.params.id });
+    res.json({ success: true, message: 'Announcement and related comments deleted' });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error deleting announcement', error: error.message });
   }

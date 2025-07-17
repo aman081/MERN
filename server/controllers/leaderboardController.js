@@ -1,5 +1,5 @@
 const Event = require('../models/Event');
-const LeaderboardOverride = require('../models/LeaderboardOverride');
+// Removed LeaderboardOverride import and all manual/clear logic
 
 // Calculate leaderboard from concluded events
 const getLeaderboard = async (req, res) => {
@@ -13,26 +13,30 @@ const getLeaderboard = async (req, res) => {
     concludedEvents.forEach(event => {
       event.winners.forEach(winner => {
         const branch = winner.branch;
-        
-        if (!branchPoints[branch]) {
-          branchPoints[branch] = {
-            branch,
-            points: 0,
-            firstCount: 0,
-            secondCount: 0,
-            thirdCount: 0
-          };
-        }
+        if (!branch) return; // Skip if branch is empty, null, or undefined
 
-        branchPoints[branch].points += winner.points;
+        // Only process if points is a valid number
+        if (typeof winner.points === 'number' && !isNaN(winner.points)) {
+          if (!branchPoints[branch]) {
+            branchPoints[branch] = {
+              branch,
+              points: 0,
+              firstCount: 0,
+              secondCount: 0,
+              thirdCount: 0
+            };
+          }
 
-        // Count medals for tie-breaking
-        if (winner.position === 'First' || winner.position === 'Team') {
-          branchPoints[branch].firstCount += 1;
-        } else if (winner.position === 'Second') {
-          branchPoints[branch].secondCount += 1;
-        } else if (winner.position === 'Third') {
-          branchPoints[branch].thirdCount += 1;
+          branchPoints[branch].points += winner.points;
+
+          // Count medals for tie-breaking
+          if (winner.position === 'First' || winner.position === 'Team') {
+            branchPoints[branch].firstCount += 1;
+          } else if (winner.position === 'Second') {
+            branchPoints[branch].secondCount += 1;
+          } else if (winner.position === 'Third') {
+            branchPoints[branch].thirdCount += 1;
+          }
         }
       });
     });
@@ -52,15 +56,7 @@ const getLeaderboard = async (req, res) => {
     });
 
     // Merge manual overrides
-    const overrides = await LeaderboardOverride.find({});
-    overrides.forEach(override => {
-      if (branchPoints[override.branch]) {
-        branchPoints[override.branch].points = override.points;
-        branchPoints[override.branch].firstCount = override.firstCount;
-        branchPoints[override.branch].secondCount = override.secondCount;
-        branchPoints[override.branch].thirdCount = override.thirdCount;
-      }
-    });
+    // Removed overrides.forEach(override => { ... });
 
     // Convert to array and sort
     const leaderboard = Object.values(branchPoints).sort((a, b) => {
@@ -143,40 +139,7 @@ const getPointsSystem = async (req, res) => {
   }
 };
 
-// PATCH /api/leaderboard/manual - set manual points and medals for a branch
-const setManualLeaderboard = async (req, res) => {
-  try {
-    const { branch, points, firstCount, secondCount, thirdCount } = req.body;
-    if (!branch || typeof points !== 'number' || points < 0 ||
-        typeof firstCount !== 'number' || firstCount < 0 ||
-        typeof secondCount !== 'number' || secondCount < 0 ||
-        typeof thirdCount !== 'number' || thirdCount < 0) {
-      return res.status(400).json({ success: false, message: 'Invalid branch, points, or medal counts' });
-    }
-    await LeaderboardOverride.findOneAndUpdate(
-      { branch },
-      { branch, points, firstCount, secondCount, thirdCount },
-      { upsert: true, new: true }
-    );
-    res.json({ success: true, message: 'Leaderboard points and medals updated.' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to update leaderboard points and medals.' });
-  }
-};
-
-// Utility: Clear leaderboard by removing winners from all events
-const clearLeaderboard = async (req, res) => {
-  try {
-    await Event.updateMany({}, { $set: { winners: [] } });
-    res.json({ success: true, message: 'Leaderboard cleared. All branch points set to 0.' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Error clearing leaderboard', error: error.message });
-  }
-};
-
 module.exports = {
   getLeaderboard,
-  getPointsSystem,
-  clearLeaderboard,
-  setManualLeaderboard
-}; 
+  getPointsSystem
+};

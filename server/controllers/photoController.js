@@ -3,8 +3,11 @@ const Photo = require('../models/Photo');
 // Upload photo
 const uploadPhoto = async (req, res) => {
   try {
-    const { eventId, url, caption, tags, isCover } = req.body;
-    const photo = new Photo({ eventId, url, caption, tags, isCover });
+    const { url, caption, sportsTag, branchTags } = req.body;
+    if (!url || !sportsTag) {
+      return res.status(400).json({ success: false, message: 'Image URL and sports tag are required' });
+    }
+    const photo = new Photo({ url, caption, sportsTag, branchTags });
     await photo.save();
     res.status(201).json({ success: true, data: photo, message: 'Photo uploaded' });
   } catch (error) {
@@ -15,7 +18,17 @@ const uploadPhoto = async (req, res) => {
 // Get all photos
 const getPhotos = async (req, res) => {
   try {
-    const photos = await Photo.find().sort({ createdAt: -1 });
+    const { sportsTag, branchTags } = req.query;
+    const filter = {};
+    if (sportsTag) filter.sportsTag = sportsTag;
+    if (branchTags) {
+      // branchTags can be a comma-separated string
+      const tagsArray = Array.isArray(branchTags)
+        ? branchTags
+        : branchTags.split(',').map(t => t.trim()).filter(Boolean);
+      filter.branchTags = { $in: tagsArray };
+    }
+    const photos = await Photo.find(filter).sort({ createdAt: -1 });
     res.json({ success: true, data: photos });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error fetching photos', error: error.message });
@@ -38,10 +51,10 @@ const getPhoto = async (req, res) => {
 // Update photo
 const updatePhoto = async (req, res) => {
   try {
-    const { eventId, url, caption, tags, isCover } = req.body;
+    const { url, caption, sportsTag, branchTags } = req.body;
     const photo = await Photo.findByIdAndUpdate(
       req.params.id,
-      { eventId, url, caption, tags, isCover },
+      { url, caption, sportsTag, branchTags },
       { new: true, runValidators: true }
     );
     if (!photo) {

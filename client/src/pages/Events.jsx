@@ -9,6 +9,11 @@ const statusColors = {
   Concluded: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
 };
 
+const genderBg = {
+  Boys: 'bg-blue-50',
+  Girls: 'bg-pink-50',
+};
+
 const Events = () => {
   const { events, loading } = useEvents();
 
@@ -58,7 +63,7 @@ const Events = () => {
                       <Link
                         to={`/events/${event._id}`}
                         key={event._id}
-                        className="block bg-gray-50 dark:bg-gray-700 rounded-lg shadow hover:shadow-lg transition p-5 border border-gray-200 dark:border-gray-600"
+                        className={`block rounded-lg shadow hover:shadow-lg transition p-5 border border-gray-200 dark:border-gray-600 ${genderBg[event.category] || 'bg-gray-50 dark:bg-gray-700'}`}
                       >
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-lg font-semibold text-gray-900 dark:text-white truncate">{event.name}</span>

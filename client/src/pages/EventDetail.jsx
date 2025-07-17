@@ -9,6 +9,11 @@ const statusColors = {
   Concluded: 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
 };
 
+const genderBg = {
+  Boys: 'bg-blue-50',
+  Girls: 'bg-pink-50',
+};
+
 const EventDetail = () => {
   const { id } = useParams();
   const [event, setEvent] = useState(null);
@@ -55,7 +60,7 @@ const EventDetail = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="card p-8"
+        className={`card p-8 ${genderBg[event.category] || ''}`}
       >
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <span className={`badge font-bold ${statusColors[event.status]}`}>{event.status}</span>

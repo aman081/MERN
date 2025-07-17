@@ -177,24 +177,19 @@ const addWinners = async (req, res) => {
       });
     }
 
-    // Validate winners based on event type
-    if (event.eventType === 'Individual') {
-      if (winners.length !== 3) {
-        return res.status(400).json({
-          success: false,
-          message: 'Individual events must have exactly 3 winners (1st, 2nd, 3rd)'
-        });
-      }
-    } else if (event.eventType === 'Team') {
-      if (winners.length !== 1) {
-        return res.status(400).json({
-          success: false,
-          message: 'Team events must have exactly 1 winner'
-        });
-      }
-    }
+    // Filter out any winner entries with empty/null/undefined branch
+    const filteredWinners = Array.isArray(winners) ? winners.filter(w => w.branch) : [];
 
-    event.winners = winners;
+    // New validation: At least one winner (branch) is required for any event type
+    if (filteredWinners.length < 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least the winner branch (1st place) is required.'
+      });
+    }
+    // Points for 1st, 2nd, and 3rd are all optional
+
+    event.winners = filteredWinners;
     event.status = 'Concluded';
     await event.save();
 

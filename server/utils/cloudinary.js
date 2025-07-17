@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const cloudinary = require('cloudinary').v2;
 
 // Configure Cloudinary
@@ -10,7 +12,12 @@ cloudinary.config({
 // Upload image to Cloudinary
 const uploadImage = async (file, folder = 'urjaa') => {
   try {
-    const result = await cloudinary.uploader.upload(file, {
+    let uploadSource = file;
+    if (Buffer.isBuffer(file)) {
+      // Convert buffer to data URI
+      uploadSource = `data:image/jpeg;base64,${file.toString('base64')}`;
+    }
+    const result = await cloudinary.uploader.upload(uploadSource, {
       folder: folder,
       resource_type: 'auto',
       transformation: [

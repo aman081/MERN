@@ -20,6 +20,11 @@ const PointsSystem = () => {
     fetchPoints();
   }, []);
 
+  const genderBg = {
+    Boys: 'bg-blue-50',
+    Girls: 'bg-pink-50',
+  };
+
   return (
     <div className="space-y-6">
       <motion.div
@@ -49,7 +54,10 @@ const PointsSystem = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {Object.entries(points).map(([category, games]) => (
-              <div key={category} className="rounded-lg shadow border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-6">
+              <div
+                key={category}
+                className={`rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 ${genderBg[category] || 'bg-gray-50 dark:bg-gray-700'}`}
+              >
                 <h2 className="text-xl font-bold text-blue-700 dark:text-blue-300 mb-4">{category}</h2>
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead>

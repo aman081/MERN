@@ -46,9 +46,6 @@ const AdminDashboard = () => {
               {t.label}
             </Button>
           ))}
-          <Button variant="danger" onClick={() => navigate('/admin/leaderboard')}>
-            Edit Leaderboard
-          </Button>
         </div>
       </motion.div>
       {/* Leaderboard Modal */}
@@ -338,10 +335,7 @@ const AnnouncementsAdmin = () => {
 const PhotosAdmin = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [formOpen, setFormOpen] = useState(false);
-  const [form, setForm] = useState({ eventId: '', url: '', caption: '' });
-  const [editId, setEditId] = useState(null);
-  const [formLoading, setFormLoading] = useState(false);
+  // Remove formOpen, form, editId, formLoading, handleEdit, handleSubmit
 
   const fetchPhotos = async () => {
     setLoading(true);
@@ -359,30 +353,9 @@ const PhotosAdmin = () => {
     fetchPhotos();
   }, []);
 
-  const handleEdit = (photo) => {
-    setForm({ eventId: photo.eventId || '', url: photo.url, caption: photo.caption });
-    setEditId(photo._id);
-    setFormOpen(true);
-  };
-
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this photo?')) return;
     await api.delete(`/photos/${id}`);
-    fetchPhotos();
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
-    if (editId) {
-      await api.put(`/photos/${editId}`, form);
-    } else {
-      await api.post('/photos', form);
-    }
-    setForm({ eventId: '', url: '', caption: '' });
-    setEditId(null);
-    setFormOpen(false);
-    setFormLoading(false);
     fetchPhotos();
   };
 
@@ -390,18 +363,7 @@ const PhotosAdmin = () => {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">Photos</h2>
-        <Button variant="primary" onClick={() => { setFormOpen((v) => !v); setEditId(null); }}>
-          {formOpen ? 'Cancel' : 'Add Photo'}
-        </Button>
       </div>
-      {formOpen && (
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4 shadow space-y-4">
-          <input className="input" placeholder="Event ID (optional)" value={form.eventId} onChange={e => setForm(f => ({ ...f, eventId: e.target.value }))} />
-          <input className="input" placeholder="Image URL" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} required />
-          <input className="input" placeholder="Caption" value={form.caption} onChange={e => setForm(f => ({ ...f, caption: e.target.value }))} />
-          <Button type="submit" variant="primary" loading={formLoading}>{editId ? 'Update' : 'Add'} Photo</Button>
-        </form>
-      )}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {loading ? (
           <div className="col-span-full text-center py-4">Loading...</div>
@@ -412,7 +374,6 @@ const PhotosAdmin = () => {
             <img src={photo.url} alt={photo.caption} className="w-full h-48 object-cover" />
             <div className="p-3 text-sm text-gray-700 dark:text-gray-200 text-center">{photo.caption}</div>
             <div className="flex gap-2 p-2">
-              <Button size="sm" variant="secondary" onClick={() => handleEdit(photo)}>Edit</Button>
               <Button size="sm" variant="danger" onClick={() => handleDelete(photo._id)}>Delete</Button>
             </div>
           </div>

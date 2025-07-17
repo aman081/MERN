@@ -22,9 +22,9 @@ const AdminEventConclude = () => {
       setEvent(ev);
       if (ev) {
         setWinners([
-          { position: 'First', branch: '', points: ev.points?.first, playerOfTheMatch: '' },
-          { position: 'Second', branch: '', points: ev.points?.second },
-          { position: 'Third', branch: '', points: ev.points?.third }
+          { position: 'First', branch: '', points: undefined, playerOfTheMatch: '' },
+          { position: 'Second', branch: '', points: undefined },
+          { position: 'Third', branch: '', points: undefined }
         ]);
       }
       setLoading(false);
@@ -40,6 +40,13 @@ const AdminEventConclude = () => {
   const isWinnersValid = () => {
     if (!event) return false;
     return winners[0].branch;
+  };
+
+  // Add this function to refetch leaderboard after concluding
+  const fetchLeaderboard = async () => {
+    try {
+      await fetch('/api/leaderboard'); // Fire-and-forget, or you can store in state/context if needed
+    } catch (err) {}
   };
 
   const handleSubmit = async (e) => {
@@ -58,6 +65,7 @@ const AdminEventConclude = () => {
       return;
     }
     fetchEvents();
+    await fetchLeaderboard(); // Refetch leaderboard after concluding
     navigate('/admin');
   };
 
@@ -88,7 +96,13 @@ const AdminEventConclude = () => {
               ))}
             </select>
             <label className="block text-xs font-medium mb-1">Points <span className='text-gray-400'>(optional)</span></label>
-            <input className="input" type="number" value={winners[idx]?.points ?? ''} onChange={e => handleWinnerChange(idx, 'points', e.target.value ? Number(e.target.value) : undefined)} />
+            <input
+              className="input"
+              type="number"
+              placeholder={`Points for ${['1st', '2nd', '3rd'][idx]}`}
+              value={winners[idx]?.points ?? ''}
+              onChange={e => handleWinnerChange(idx, 'points', e.target.value ? Number(e.target.value) : undefined)}
+            />
             {idx === 0 && <>
               <label className="block text-xs font-medium mb-1">Player of the Match (optional)</label>
               <input className="input" placeholder="Player of the Match" value={winners[0]?.playerOfTheMatch || ''} onChange={e => handleWinnerChange(0, 'playerOfTheMatch', e.target.value)} />

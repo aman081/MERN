@@ -135,6 +135,10 @@ const EventsAdmin = () => {
     return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
   });
 
+  const GAME_TYPES = [
+    'Cricket', 'Football', 'Basketball', 'Volleyball', 'Badminton', 'TableTennis', 'Athletics', 'Hockey', 'Chess', 'LawnTennis', 'Marathon', 'Yoga', 'Parade', 'TOW', 'Field'
+  ];
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -173,7 +177,12 @@ const EventsAdmin = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Game Type</label>
-              <input className="input" placeholder="Game Type" value={form.gameType} onChange={e => setForm(f => ({ ...f, gameType: e.target.value }))} required />
+              <select className="input" value={form.gameType} onChange={e => setForm(f => ({ ...f, gameType: e.target.value }))} required>
+                <option value="">Select Game</option>
+                {GAME_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>

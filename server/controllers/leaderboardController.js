@@ -107,7 +107,9 @@ const getPointsSystem = async (req, res) => {
         LawnTennis: { first: 5, second: 3, third: 1 },
         Marathon: { first: 5, second: 3, third: 1 },
         Yoga: { first: 5, second: 3, third: 1 },
-        Parade: { first: 10, second: 5, third: 2.5 }
+        Parade: { first: 10, second: 5, third: 2.5 },
+        TOW: { first: 7, second: 4, third: 2 },
+        Field: { first: 6, second: 3, third: 1 }
       },
       Girls: {
         Cricket: { first: 5, second: 3, third: 1 },
@@ -122,7 +124,9 @@ const getPointsSystem = async (req, res) => {
         LawnTennis: { first: 5, second: 3, third: 1 },
         Marathon: { first: 5, second: 3, third: 1 },
         Yoga: { first: 5, second: 3, third: 1 },
-        Parade: { first: 10, second: 5, third: 2.5 }
+        Parade: { first: 10, second: 5, third: 2.5 },
+        TOW: { first: 7, second: 4, third: 2 },
+        Field: { first: 6, second: 3, third: 1 }
       }
     };
 

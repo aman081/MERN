@@ -95,40 +95,50 @@ const getPointsSystem = async (req, res) => {
     // This would typically come from a database, but for now we'll return static data
     const pointsSystem = {
       Boys: {
-        Cricket: { first: 5, second: 3, third: 1 },
-        Football: { first: 7, second: 4, third: 2 },
+        Cricket: { first: 7, second: 3, third: 1 },
+        Football: { first: 7, second: 3, third:1 },
         Basketball: { first: 6, second: 3, third: 1 },
         Volleyball: { first: 5, second: 3, third: 1 },
-        Badminton: { first: 4, second: 2, third: 1 },
+        Badminton: { first: 5, second: 3, third: 1 },
         TableTennis: { first: 3, second: 2, third: 1 },
         Athletics: { first: 5, second: 3, third: 1 },
-        Hockey: { first: 5, second: 3, third: 1 },
+        Hockey: { first: 6, second: 3, third: 1 },
         Chess: { first: 5, second: 3, third: 1 },
         LawnTennis: { first: 5, second: 3, third: 1 },
         Marathon: { first: 5, second: 3, third: 1 },
-        Yoga: { first: 5, second: 3, third: 1 },
         Parade: { first: 10, second: 5, third: 2.5 },
-        TOW: { first: 7, second: 4, third: 2 },
-        Field: { first: 6, second: 3, third: 1 }
+        Yoga: { first: 10, second: 5, third: 2 },
+        TOW: { first: 5, second: 2, third: 1 },
+        Field: { first: 5, second: 3, third: 1 }
       },
       Girls: {
         Cricket: { first: 5, second: 3, third: 1 },
-        Football: { first: 7, second: 4, third: 2 },
-        Basketball: { first: 6, second: 3, third: 1 },
-        Volleyball: { first: 5, second: 3, third: 1 },
-        Badminton: { first: 4, second: 2, third: 1 },
+        Football: { first: 5, second: 2, third: 1 },
+        Basketball: { first: 5, second: 2, third: 1 },
+        Volleyball: { first: 5, second: 2, third: 1 },
+        Badminton: { first: 5, second: 2, third: 1 },
         TableTennis: { first: 3, second: 2, third: 1 },
-        Athletics: { first: 5, second: 3, third: 1 },
-        Hockey: { first: 5, second: 3, third: 1 },
-        Chess: { first: 5, second: 3, third: 1 },
-        LawnTennis: { first: 5, second: 3, third: 1 },
-        Marathon: { first: 5, second: 3, third: 1 },
-        Yoga: { first: 5, second: 3, third: 1 },
+        Athletics: { first: 5, second: 2, third: 1 },
+        Hockey: { first: 5, second: 2, third: 1 },
+        Chess: { first: 5, second: 2, third: 1 },
+        LawnTennis: { first: 5, second: 2, third: 1 },
+        Marathon: { first: 5, second: 2, third: 1 },
         Parade: { first: 10, second: 5, third: 2.5 },
-        TOW: { first: 7, second: 4, third: 2 },
-        Field: { first: 6, second: 3, third: 1 }
+        Yoga: { first: 10, second: 5, third: 2 },
+        TOW: { first: 5, second: 2, third: 1 },
+        Field: { first: 5, second: 3, third: 1 }
       }
     };
+
+    // Sort events in each category by decreasing order of first place points
+    const sortEvents = (eventsObj) => {
+      return Object.fromEntries(
+        Object.entries(eventsObj)
+          .sort((a, b) => b[1].first - a[1].first)
+      );
+    };
+    pointsSystem.Boys = sortEvents(pointsSystem.Boys);
+    pointsSystem.Girls = sortEvents(pointsSystem.Girls);
 
     res.json({
       success: true,

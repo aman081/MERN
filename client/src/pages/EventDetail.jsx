@@ -60,81 +60,91 @@ const EventDetail = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`card p-8 ${genderBg[event.category] || ''}`}
+        className={`card p-0 overflow-hidden shadow-xl rounded-3xl border-0 ${genderBg[event.category] || ''}`}
       >
-        <div className="flex flex-wrap items-center gap-2 mb-2">
-          <span className={`badge font-bold ${statusColors[event.status]}`}>{event.status}</span>
-          <span className="badge badge-primary">{event.eventType}</span>
-          <span className="badge badge-success">{event.category}</span>
-          <span className="badge badge-outline">{event.gameType}</span>
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{event.name}</h1>
-        <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
-          <div><strong>Venue:</strong> {event.venue}</div>
-          <div><strong>Date:</strong> {new Date(event.day).toLocaleDateString()}</div>
-          <div><strong>Time:</strong> {event.time}</div>
-        </div>
-        <div className="text-gray-700 dark:text-gray-200 mb-4">
-          {event.description}
-        </div>
-        <div className="flex flex-wrap gap-2 mb-2">
-          <span className="badge badge-outline">Branches: {event.branchTags && event.branchTags.join(', ')}</span>
-        </div>
-        {/* Collapsible Points Section */}
-        <div className="mt-4">
-          <button
-            className="text-blue-600 dark:text-blue-300 font-semibold focus:outline-none"
-            onClick={() => setShowPoints((v) => !v)}
-          >
-            {showPoints ? 'Hide Points Breakdown' : 'Show Points Breakdown'}
-          </button>
-          <AnimatePresence>
-            {showPoints && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-2 flex gap-4"
-              >
-                <span className="badge badge-primary">1st: {event.points?.first}</span>
-                <span className="badge badge-success">2nd: {event.points?.second}</span>
-                <span className="badge badge-warning">3rd: {event.points?.third}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        {/* Collapsible Winners Section */}
-        {event.winners && event.winners.length > 0 && (
+        {event.coverImage && (
+          <div className="w-full h-64 md:h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
+            <img
+              src={event.coverImage}
+              alt={event.name}
+              className="object-cover w-full h-full transition-transform duration-500 hover:scale-105"
+              style={{ borderTopLeftRadius: '1.5rem', borderTopRightRadius: '1.5rem' }}
+            />
+          </div>
+        )}
+        <div className="p-8">
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className={`badge font-bold ${statusColors[event.status]}`}>{event.status}</span>
+            <span className="badge badge-primary">{event.eventType}</span>
+            <span className="badge badge-success">{event.category}</span>
+            <span className="badge badge-outline">{event.gameType}</span>
+          </div>
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight leading-tight drop-shadow-lg">{event.name}</h1>
+          <div className="flex flex-wrap gap-4 text-base text-gray-600 dark:text-gray-300 mb-3">
+            <div><strong>Venue:</strong> {event.venue}</div>
+            <div><strong>Date:</strong> {new Date(event.day).toLocaleDateString()}</div>
+            <div><strong>Time:</strong> {event.time}</div>
+          </div>
+          <div className="text-lg text-gray-700 dark:text-gray-200 mb-4 font-medium italic">{event.description}</div>
+          <div className="flex flex-wrap gap-2 mb-2">
+            <span className="badge badge-outline">Branches: {event.branchTags && event.branchTags.join(', ')}</span>
+          </div>
+          {/* Collapsible Points Section */}
           <div className="mt-4">
             <button
-              className="text-green-700 dark:text-green-300 font-semibold focus:outline-none"
-              onClick={() => setShowWinners((v) => !v)}
+              className="text-blue-600 dark:text-blue-300 font-semibold focus:outline-none hover:underline"
+              onClick={() => setShowPoints((v) => !v)}
             >
-              {showWinners ? 'Hide Winners' : 'Show Winners'}
+              {showPoints ? 'Hide Points Breakdown' : 'Show Points Breakdown'}
             </button>
             <AnimatePresence>
-              {showWinners && (
-                <motion.ul
+              {showPoints && (
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="list-disc ml-6 text-gray-700 dark:text-gray-200 mt-2"
+                  className="mt-2 flex gap-4"
                 >
-                  {event.winners.map((winner, idx) => (
-                    <li key={idx} className="mb-1">
-                      <span className="font-semibold">{winner.position}:</span> {winner.branch} ({winner.points} pts)
-                      {winner.playerOfTheMatch && (
-                        <span className="ml-2 text-xs text-green-600 dark:text-green-300">Player of the Match: {winner.playerOfTheMatch}</span>
-                      )}
-                    </li>
-                  ))}
-                </motion.ul>
+                  <span className="badge badge-primary">1st: {event.points?.first}</span>
+                  <span className="badge badge-success">2nd: {event.points?.second}</span>
+                  <span className="badge badge-warning">3rd: {event.points?.third}</span>
+                </motion.div>
               )}
             </AnimatePresence>
           </div>
-        )}
+          {/* Collapsible Winners Section */}
+          {event.winners && event.winners.length > 0 && (
+            <div className="mt-4">
+              <button
+                className="text-green-700 dark:text-green-300 font-semibold focus:outline-none hover:underline"
+                onClick={() => setShowWinners((v) => !v)}
+              >
+                {showWinners ? 'Hide Winners' : 'Show Winners'}
+              </button>
+              <AnimatePresence>
+                {showWinners && (
+                  <motion.ul
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="list-disc ml-6 text-gray-700 dark:text-gray-200 mt-2"
+                  >
+                    {event.winners.map((winner, idx) => (
+                      <li key={idx} className="mb-1">
+                        <span className="font-semibold">{winner.position}:</span> {winner.branch} ({winner.points} pts)
+                        {winner.playerOfTheMatch && (
+                          <span className="ml-2 text-xs text-green-600 dark:text-green-300">Player of the Match: {winner.playerOfTheMatch}</span>
+                        )}
+                      </li>
+                    ))}
+                  </motion.ul>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
       </motion.div>
       <div className="text-center mt-6">
         <Link to="/events" className="text-blue-600 hover:underline">← Back to Events</Link>

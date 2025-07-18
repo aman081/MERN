@@ -64,16 +64,19 @@ const EventsAdmin = () => {
   const { events, loading, createEvent, updateEvent, deleteEvent, updateEventStatus, addWinners, fetchEvents } = useEvents();
   const [formOpen, setFormOpen] = useState(false);
   const [form, setForm] = useState({
-    name: '', description: '', day: '', time: '', venue: '', branchTags: [], gameType: '', category: 'Boys', eventType: 'Individual', points: { first: 0, second: 0, third: 0 }, status: 'Upcoming'
+    name: '', description: '', day: '', time: '', venue: '', branchTags: [], gameType: '', category: 'Boys', eventType: 'Individual', points: { first: 0, second: 0, third: 0 }, status: 'Upcoming', coverImage: ''
   });
   const [editId, setEditId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const navigate = useNavigate();
 
   const handleEdit = (event) => {
     setForm({ ...event, day: event.day?.slice(0, 10) });
     setEditId(event._id);
     setFormOpen(true);
+    setImagePreview(event.coverImage || '');
   };
 
   const handleDelete = async (id) => {
@@ -81,18 +84,41 @@ const EventsAdmin = () => {
     await deleteEvent(id);
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    setImagePreview(file ? URL.createObjectURL(file) : '');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
-    if (editId) {
-      await updateEvent(editId, form);
-    } else {
-      await createEvent(form);
+    let coverImageUrl = form.coverImage;
+    if (imageFile) {
+      // Upload image to Cloudinary
+      const data = new FormData();
+      data.append('file', imageFile);
+      try {
+        const res = await api.post('/photos/cloudinary-upload', data, { headers: { 'Content-Type': 'multipart/form-data' } });
+        coverImageUrl = res.data.url;
+      } catch (err) {
+        alert('Image upload failed.');
+        setFormLoading(false);
+        return;
+      }
     }
-    setForm({ name: '', description: '', day: '', time: '', venue: '', branchTags: [], gameType: '', category: 'Boys', eventType: 'Individual', points: { first: 0, second: 0, third: 0 }, status: 'Upcoming' });
+    const eventPayload = { ...form, coverImage: coverImageUrl };
+    if (editId) {
+      await updateEvent(editId, eventPayload);
+    } else {
+      await createEvent(eventPayload);
+    }
+    setForm({ name: '', description: '', day: '', time: '', venue: '', branchTags: [], gameType: '', category: 'Boys', eventType: 'Individual', points: { first: 0, second: 0, third: 0 }, status: 'Upcoming', coverImage: '' });
     setEditId(null);
     setFormOpen(false);
     setFormLoading(false);
+    setImageFile(null);
+    setImagePreview('');
   };
 
   // Status change handlers
@@ -119,6 +145,15 @@ const EventsAdmin = () => {
       </div>
       {formOpen && (
         <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl p-6 mb-4 shadow space-y-4">
+          {/* Event Image Upload - moved to top and styled */}
+          <div className="mb-4 flex flex-col items-center justify-center border-2 border-dashed border-blue-400 rounded-xl p-4 bg-blue-50 dark:bg-blue-900/20">
+            <label className="block text-base font-semibold text-blue-700 dark:text-blue-200 mb-2">Event Image (optional)</label>
+            <span className="text-xs text-gray-500 mb-2">Upload a cover image for this event. If not provided, a default image will be shown.</span>
+            <input type="file" accept="image/*" onChange={handleImageChange} className="mb-2" />
+            {imagePreview && (
+              <img src={imagePreview} alt="Preview" className="rounded-lg max-h-40 border shadow" />
+            )}
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Name</label>

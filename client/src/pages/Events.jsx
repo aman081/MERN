@@ -73,10 +73,8 @@ const Events = () => {
                         <div className="text-sm text-gray-600 dark:text-gray-300 mb-1 truncate">{event.venue}</div>
                         <div className="flex flex-wrap gap-2 mt-1">
                           <span className="badge badge-primary">{event.eventType}</span>
-                          <span className="badge badge-success">{event.category}</span>
                           <span className="badge badge-outline">{event.gameType}</span>
                         </div>
-                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{event.description}</div>
                       </Link>
                     ))}
                   </div>

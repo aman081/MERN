@@ -187,13 +187,14 @@ const Gallery = () => {
             {photos.map(photo => (
               <div key={photo._id} className="rounded-lg overflow-hidden shadow border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
                 <img src={photo.url} alt={photo.caption} className="w-full h-48 object-cover" />
-                <div className="p-3 text-sm text-gray-700 dark:text-gray-200 text-center">{photo.caption}</div>
-                <div className="px-3 pb-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-                  <span className="mr-2">{photo.sportsTag}</span>
-                  {photo.branchTags && photo.branchTags.length > 0 && (
-                    <span>| {photo.branchTags.join(', ')}</span>
-                  )}
-                </div>
+                {photo.caption && (
+                  <div className="p-3 text-sm text-gray-700 dark:text-gray-200 text-center">{photo.caption}</div>
+                )}
+                {photo.branchTags && photo.branchTags.length > 0 && (
+                  <div className="px-3 pb-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+                    {photo.branchTags.join(', ')}
+                  </div>
+                )}
               </div>
             ))}
           </div>

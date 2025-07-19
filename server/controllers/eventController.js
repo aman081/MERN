@@ -167,7 +167,7 @@ const updateEventStatus = async (req, res) => {
 // Add winners to event
 const addWinners = async (req, res) => {
   try {
-    const { winners } = req.body;
+    const { winners, result } = req.body;
     
     const event = await Event.findById(req.params.id);
     if (!event) {
@@ -191,6 +191,9 @@ const addWinners = async (req, res) => {
 
     event.winners = filteredWinners;
     event.status = 'Concluded';
+    if (typeof result === 'string') {
+      event.result = result;
+    }
     await event.save();
 
     res.json({

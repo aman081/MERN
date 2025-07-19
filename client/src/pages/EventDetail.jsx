@@ -86,6 +86,13 @@ const EventDetail = () => {
             <div><strong>Time:</strong> {event.time}</div>
           </div>
           <div className="text-lg text-gray-700 dark:text-gray-200 mb-4 font-medium italic">{event.description}</div>
+          {/* Event Result for Concluded Events */}
+          {event.status === 'Concluded' && event.result && (
+            <div className="mb-4 p-4 rounded-xl bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 flex items-center gap-2">
+              <span className="text-lg font-bold text-green-700 dark:text-green-300">Result:</span>
+              <span className="text-base text-gray-900 dark:text-white">{event.result}</span>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2 mb-2">
             <span className="badge badge-outline">Branches: {event.branchTags && event.branchTags.join(', ')}</span>
           </div>

@@ -54,6 +54,9 @@ const eventSchema = new mongoose.Schema({
       required: true
     }
   },
+  result: {
+    type: String
+  },
   coverImage: {
     type: String
   },

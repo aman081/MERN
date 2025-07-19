@@ -12,6 +12,7 @@ const AdminEventConclude = () => {
   const [winners, setWinners] = useState([]);
   const [winnerLoading, setWinnerLoading] = useState(false);
   const [winnerError, setWinnerError] = useState('');
+  const [result, setResult] = useState('');
 
   const ALL_BRANCHES = ['CSE', 'ECE', 'CE', 'ME', 'EE', 'MME', 'PIE+ECM'];
 
@@ -58,14 +59,15 @@ const AdminEventConclude = () => {
       setWinnerLoading(false);
       return;
     }
-    const result = await addWinners(id, winners);
-    if (!result.success) {
-      setWinnerError(result.error || 'Failed to save winners.');
+    const payload = { winners, result };
+    const res = await addWinners(id, payload);
+    if (!res.success) {
+      setWinnerError(res.error || 'Failed to save winners.');
       setWinnerLoading(false);
       return;
     }
     fetchEvents();
-    await fetchLeaderboard(); // Refetch leaderboard after concluding
+    await fetchLeaderboard();
     navigate('/admin');
   };
 
@@ -109,6 +111,15 @@ const AdminEventConclude = () => {
             </>}
           </div>
         ))}
+        <div>
+          <label className="block text-sm font-medium mb-1">Result <span className='text-gray-400'>(e.g. "CSE win by 10 runs")</span></label>
+          <input
+            className="input"
+            placeholder="Enter event result (optional)"
+            value={result}
+            onChange={e => setResult(e.target.value)}
+          />
+        </div>
         {winnerError && <div className="text-red-600 text-sm font-semibold">{winnerError}</div>}
         <div className="flex gap-2 justify-end mt-4">
           <Button type="button" variant="secondary" onClick={() => navigate('/admin')}>Cancel</Button>

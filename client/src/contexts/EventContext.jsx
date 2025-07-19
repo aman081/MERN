@@ -109,9 +109,9 @@ export const EventProvider = ({ children }) => {
   };
 
   // Add winners to event (admin only)
-  const addWinners = async (id, winners) => {
+  const addWinners = async (id, payload) => {
     try {
-      const response = await api.patch(`/events/${id}/winners`, { winners });
+      const response = await api.patch(`/events/${id}/winners`, payload);
       toast.success('Winners added successfully!');
       fetchEvents(); // Refresh events list
       return { success: true, data: response.data.data };

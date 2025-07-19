@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import logo from '../../assets/logo-jsr.png'; 
+
+
+
 import { 
   Menu, 
   X, 
@@ -42,8 +46,9 @@ const Layout = ({ children }) => {
         <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white dark:bg-gray-800 shadow-xl">
           <div className="flex h-16 items-center justify-between px-4">
             <div className="flex items-center">
-              <Trophy className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Urjaa</span>
+              <img src={logo} alt="Logo" className="h-8 w-auto" />
+
+              <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">URJA</span>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -91,7 +96,8 @@ const Layout = ({ children }) => {
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 shadow-xl">
           <div className="flex h-16 items-center px-4">
-            <Trophy className="h-8 w-8 text-blue-600" />
+           <img src={logo} alt="Urjaa Logo" className="h-8 w-8" />
+
             <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Urjaa Sports Fest</span>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">

@@ -111,7 +111,7 @@ const Gallery = () => {
         </p>
       </motion.div>
       {/* Admin Upload UI */}
-      {isAdmin && (
+      {isAdmin() && (
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow border border-gray-200 dark:border-gray-700 mb-4">
           <h2 className="text-lg font-bold mb-2">Upload Photo</h2>
           <form onSubmit={handleUpload} className="flex flex-col md:flex-row gap-4 items-center">

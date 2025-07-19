@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import urjaLogo from '../assets/urja-logo.jpeg';
+
+
+
 import { 
   Trophy, 
   Calendar, 
@@ -94,12 +98,15 @@ const Home = () => {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white"
-      >
+ <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
+  className="relative overflow-hidden rounded-2xl bg-cover bg-center text-white"
+  style={{ backgroundImage: `url(${urjaLogo})` }}
+>
+
+      
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative px-6 py-16 sm:px-12 sm:py-24">
           <div className="mx-auto max-w-4xl text-center">
@@ -109,7 +116,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl font-bold tracking-tight sm:text-6xl"
             >
-              Urjaa Sports Fest 2025
+              Urja Sports Fest 2025
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -117,7 +124,7 @@ const Home = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="mt-6 text-xl text-blue-100"
             >
-              Experience the thrill of competition, the joy of victory, and the spirit of sportsmanship
+              {/* Experience the thrill of competition, the joy of victory, and the spirit of sportsmanship */}
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

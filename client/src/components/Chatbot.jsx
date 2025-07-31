@@ -32,7 +32,7 @@ const Chatbot = () => {
     setQuery("");
 
     try {
-      const res = await axios.post("/api/chatbot", { userQuery: query });
+      const res =  await axios.post("https://urjaa-backend.onrender.com/api/chatbot", { userQuery: query });
 
       const botMsg = {
         sender: "bot",

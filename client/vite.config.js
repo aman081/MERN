@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:5001', // Your Express backend
+        target: 'http://localhost:5001'||'https://urjaa-backend.onrender.com', // Your Express backend
         changeOrigin: true,
         secure: false,
       },

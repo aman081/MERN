@@ -123,9 +123,11 @@ Answer the user's query in a helpful, concise, and friendly way.
 Query: "${userQuery}"
 
 Guidelines:
-- Respond in 3–5 short bullet points
-- Use the Unicode bullet "•" for each point
-- Keep it clear and easy to read
+- Respond in 3–6 bullet points
+- Start each bullet with the Unicode bullet "•"
+- Each bullet should be on a new line
+- Only use facts from the context
+- Keep formatting clean and user-friendly
     `;
 
     const genRes = await model.generateContent(prompt);

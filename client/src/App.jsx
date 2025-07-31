@@ -17,6 +17,9 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AdminAnnouncementDetail from './pages/AdminAnnouncementDetail';
 import AdminAnnouncementComments from './pages/AdminAnnouncementComments';
 import AdminEventConclude from './pages/AdminEventConclude';
+import Chatbot from "./components/Chatbot";
+
+
 
 function App() {
   return (
@@ -72,7 +75,7 @@ function App() {
                 />
               </Routes>
             </Layout>
-            
+              <Chatbot />
             {/* Toast Notifications */}
             <Toaster
               position="top-right"

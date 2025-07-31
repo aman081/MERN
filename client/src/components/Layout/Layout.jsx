@@ -30,6 +30,7 @@ const Layout = ({ children }) => {
     { name: 'Points System', href: '/points-system', icon: Trophy },
     { name: 'Gallery', href: '/gallery', icon: Image },
     { name: 'Announcements', href: '/announcements', icon: Megaphone },
+
   ];
 
   const adminNavigation = [

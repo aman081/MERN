@@ -68,6 +68,7 @@ export const endpoints = {
     delete: (id) => `/comments/${id}`,
   },
   health: '/health',
+  chatbot: '/chatbot',
 };
 
 // Helper functions
